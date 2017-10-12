@@ -2,6 +2,7 @@
 class Demo {
     constructor(config) {
         this.config = config;
+        console.log('asdasd');
         const wrap = document.querySelector('.demo');
         wrap.innerHTML = this.init();
     }
