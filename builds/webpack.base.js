@@ -1,96 +1,68 @@
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const path = require('path');
 const webpack = require('webpack');
- 
-// 配置常量
-// 源代码的根目录（本地物理文件路径）
-const SRC_PATH = path.resolve('./src');
-// 打包后的资源根目录（本地物理文件路径）
-const ASSETS_BUILD_PATH = path.resolve('./release');
-// 资源根目录（可以是 CDN 上的绝对路径，或相对路径）
-const ASSETS_PUBLIC_PATH = './assets/';
-console.log(SRC_PATH);
+const Config = require('./source.base');
+const autoprefixer = require('autoprefixer');
+
 module.exports = {
-  context: SRC_PATH, // 设置源代码的默认根路径
-  resolve: {
-    extensions: ['.js', '.jsx']  // 同时支持 js 和 jsx
-  },
-  entry: {
-    // 注意 entry 中的路径都是相对于 SRC_PATH 的路径
-    index: './app'
-  },
+  entry:  Config.entry,
   output: {
-    path: ASSETS_BUILD_PATH,
-    publicPath: ASSETS_PUBLIC_PATH,
-    filename: './[name].js'
+    path: Config.outputPath,//打包后的文件存放的地方
+    filename: Config.outputFileName,//打包后输出文件的文件名
+    library: Config.outputLibrary,         // 项目对外命名
+    libraryTarget: Config.outputLibraryTarget     // 打包对外模式, 默认 var, 可选umd、amd等
   },
   module: {
     rules: [
-      {
-        enforce: 'pre',  // ESLint 优先级高于其他 JS 相关的 loader
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader'
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        // 建议把 babel 的运行时配置放在 .babelrc 里，从而与 eslint-loader 等共享配置
-        loader: 'babel-loader'
-      },
-      {
-        test: /\.(png|jpg|gif)$/,
-        use:
-        [
-          {
-            loader: 'url-loader',
-            options:
-            {
-              limit: 8192,
-              name: 'images/[name].[ext]'
-            }
-          }
-        ]
-      },
-      {
-        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use:
-        [
-          {
-            loader: 'url-loader',
-            options:
-            {
-              limit: 8192,
-              mimetype: 'application/font-woff',
-              name: 'fonts/[name].[ext]'
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use:
-        [
-          {
-            loader: 'file-loader',
-            options:
-            {
-              limit: 8192,
-              mimetype: 'application/font-woff',
-              name: 'fonts/[name].[ext]'
-            }
-          }
-        ]
-      }
+        {
+            test: /(\.js)$/,
+            use: {
+                loader: "babel-loader",
+            },
+            exclude: /node_modules/
+        },{
+          test: /\.less$/,
+          use: [
+              {
+                  loader: "style-loader"
+              }, {
+                  loader: "css-loader",
+                  // options: {
+                  //   modules: true
+                  // }
+              }, {
+                loader: 'postcss-loader',
+                options: {
+                  plugins: () => [autoprefixer(
+                    { browsers: ['iOS >= 7', 'Android >= 4.1', 
+                       'last 10 Chrome versions', 'last 10 Firefox versions', 
+                       'Safari >= 6', 'ie > 8'] 
+                    }
+                  )],
+                },
+              }, {
+                loader: "less-loader"
+              },
+              
+          ]
+        },
+        {
+          test: /.(png|svg|jpe?g|gif)$/,
+          use: [
+              'url-loader?limit=102400&name=images/[name].[ext]'
+          ]
+        }, {
+            test: /\.(eot|svg|ttf|woff)/i,
+            use: 'url-loader?limit=102400'
+        }
     ]
   },
   plugins: [
-    // 每次打包前，先清空原来目录中的内容
-    new CleanWebpackPlugin([ASSETS_BUILD_PATH], { verbose: false }),
-    // 启用 CommonChunkPlugin
-    new webpack.optimize.CommonsChunkPlugin({
-      names: 'index',
-      minChunks: Infinity
-    })
+    new webpack.BannerPlugin('版权所有，翻版必究'),
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV) // default value if not specified
+      }
+    }),
+    
   ]
-};
+    
+}

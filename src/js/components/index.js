@@ -1,13 +1,12 @@
 
-
 class Demo {
     constructor(config) {
         this.config = config;
-        this._init();
-        return this;
+        const wrap = document.querySelector('.demo');
+        wrap.innerHTML = this.init();
     }
 
-    _init() {
+    init() {
         return `<h1>${this.config.hello}</h1>`;
     }
 }

@@ -1,5 +1,8 @@
 
 
+import './../css/common/index.less';
+import './../css/components/index.less';
+
 import Demo from './components/index';
 
 class App {
@@ -10,7 +13,7 @@ class App {
     }
 
     init() {
-        return new Demo(this.config);
+        this.d = new Demo(this.config);
     }
 }
 
