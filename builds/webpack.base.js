@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const Config = require('./source.base');
 const autoprefixer = require('autoprefixer');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry:  Config.entry,
@@ -20,29 +21,34 @@ module.exports = {
             exclude: /node_modules/
         },{
           test: /\.less$/,
-          use: [
-              {
-                  loader: "style-loader"
-              }, {
-                  loader: "css-loader",
-                  // options: {
-                  //   modules: true
-                  // }
-              }, {
-                loader: 'postcss-loader',
-                options: {
-                  plugins: () => [autoprefixer(
-                    { browsers: ['iOS >= 7', 'Android >= 4.1', 
-                       'last 10 Chrome versions', 'last 10 Firefox versions', 
-                       'Safari >= 6', 'ie > 8'] 
-                    }
-                  )],
-                },
-              }, {
-                loader: "less-loader"
-              },
+          use: ExtractTextPlugin.extract({
+            fallback: "style-loader",
+            use: ["css-loader","postcss-loader","less-loader"]
+          })
+
+          // use: [
+          //     {
+          //         loader: "style-loader"
+          //     }, {
+          //         loader: "css-loader",
+          //         options: {
+          //           sourceMap: true
+          //         }
+          //     }, {
+          //       loader: 'postcss-loader',
+          //       options: {
+          //         plugins: () => [autoprefixer(
+          //           { browsers: ['iOS >= 7', 'Android >= 4.1', 
+          //              'last 10 Chrome versions', 'last 10 Firefox versions', 
+          //              'Safari >= 6', 'ie > 8'] 
+          //           }
+          //         )],
+          //       },
+          //     }, {
+          //       loader: "less-loader"
+          //     },
               
-          ]
+          // ]
         },
         {
           test: /.(png|svg|jpe?g|gif)$/,
@@ -62,7 +68,9 @@ module.exports = {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV) // default value if not specified
       }
     }),
-    
+    new ExtractTextPlugin({
+      filename: "index.css"
+  }),
   ]
     
 }
