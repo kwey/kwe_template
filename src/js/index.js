@@ -14,6 +14,13 @@ class App {
 
     init() {
         this.d = new Demo(this.config);
+        console.log(App.getVersion());
+    }
+
+    static getVersion() {
+        return {
+            version: 'REPLACE_VERSION',
+        };
     }
 }
 

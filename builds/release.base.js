@@ -1,10 +1,21 @@
 const webpack = require('webpack');
 const config = require('./webpack.base');
 const source = require('./source.base');
+const getVersion = require('./get-version');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const outPath = source.outputPath;
-
+console.log(getVersion());
+config.module.rules.push({
+    test: /index\.js$/,
+    loader: 'webpack-replace',
+    query: {
+      replace: [{
+        from: 'REPLACE_VERSION',
+        to: getVersion().verision
+      }]
+    }
+  })
 config.plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
         warnings: false
