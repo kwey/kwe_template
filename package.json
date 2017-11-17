@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --open",
     "release": "cross-env NODE_ENV=release webpack --display-modules --sort-modules-by size"
   },
   "repository": {
