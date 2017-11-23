@@ -10,7 +10,7 @@ bin-release/
 node_modules/
 release/
 dist/
-
+npm-debug.log
 # Executables
 *.swf
 *.air
